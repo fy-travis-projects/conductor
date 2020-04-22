@@ -1622,30 +1622,4 @@ public class WorkflowExecutor {
         }
         return false;
     }
-
-    /**
-     * Verify that the Subworkflow is still operational for a given parent workflow.
-     * For eg., if parent workflow's Subworkflow task is retried, the previous workflow is no longer associated with parent,
-     * and any operations on it shouldn't impact the current running Subworkflow and Parent.
-     * Future improvements: Check if this flow is part of other System task like Decide, Join etc.
-     * @param workflow
-     * @return
-     */
-    public boolean isViolatingParentWorkflowConsistency(Workflow workflow) {
-        if (StringUtils.isEmpty(workflow.getParentWorkflowId())) {
-            return false;
-        }
-        Workflow parent = executionDAOFacade.getWorkflowById(workflow.getParentWorkflowId(), true);
-        // If parent is not terminal, any operation on Subworkflow is invalid
-        if (!parent.getStatus().isTerminal()) {
-            return true;
-        } else {
-            // Ensure the Subworkflow task in parent workflow is the last and terminal, or doesn't violate any constraints.
-            Task parentWorkflowTask = executionDAOFacade.getTaskById(workflow.getParentWorkflowTaskId());
-            if (parent.getTasks().get(parent.getTasks().size() - 1).getTaskId().equals(parentWorkflowTask.getTaskId())) {
-                return false;
-            }
-        }
-        return true;
-    }
 }
