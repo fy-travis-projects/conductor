@@ -4,7 +4,8 @@ jdk:
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 install: true
-script: "./buildViaTravis.sh"
+script: 
+  - ./gradlew assemble
 git:
   depth: 150
 addons:
